@@ -20,8 +20,12 @@ loadMyData <- function(MyDataFileName, sheetName = NULL)
     wb <- loadWorkbook(file.path(data_folder, MyDataFileName))
     data <- readWorksheet(wb, sheetName)
   } else {
-    data <- read.csv(MyDataFileName)
+    data <- read.csv(MyDataFileName, stringsAsFactors = F)
   }
+  if("ID" %in% colnames(data))
+    data$ID <- as.character(data$ID)
+  if("ShortID" %in% colnames(data))
+    data$ShortID <- as.character(data$ShortID)
   return(data)
 }
   
