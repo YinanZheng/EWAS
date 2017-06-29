@@ -15,17 +15,26 @@ addlogtransform <- function(pheno, var.list, base = exp(1)){
 loadMyData <- function(MyDataFileName, sheetName = NULL)
 {
   suffix <- unlist(strsplit(MyDataFileName,"\\."))[2]
+  
+  if(suffix == "csv")
+    stop("csv format is not allowed!")
+  
   if(suffix %in% c("xlsx", "xls"))
   {
     wb <- loadWorkbook(file.path(data_folder, MyDataFileName))
     data <- readWorksheet(wb, sheetName)
-  } else {
-    data <- read.csv(MyDataFileName, stringsAsFactors = F)
+  } 
+  
+  if(suffix == "rds")
+  {
+    data <- readRDS(MyDataFileName)
   }
+  
   if("ID" %in% colnames(data))
     data$ID <- as.character(data$ID)
   if("ShortID" %in% colnames(data))
     data$ShortID <- as.character(data$ShortID)
+  
   return(data)
 }
   
