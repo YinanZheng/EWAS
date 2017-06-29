@@ -21,7 +21,7 @@ publishFormat<-function(res, rounddigit = 3){
   return(res)
 }
 
-sigResults <- function(results, psigcut = $psigcut, rounddigit = 3){
+sigResults <- function(results, psigcut = psigcut, rounddigit = 3){
   results <- publishFormat(results)
   results <- na.omit(results)
   results$p.FDR<-p.adjust(results$pvalue,"fdr")
