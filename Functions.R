@@ -4,14 +4,12 @@
 addlogtransform <- function(pheno, var.list, base = exp(1)){
   if(!'data.frame' %in% class(pheno))
     stop("pheno type data must be in data.frame!")
-  
   for(var in var.list)
   {
     eval(parse(text = paste0("pheno$log_", var, "=log(pheno$",var,", base = base)")))
   }
   return(pheno)
 }
-
 
 # Load custom dataset
 loadMyData <- function(MyDataFileName, sheetName = NULL)
@@ -27,7 +25,7 @@ loadMyData <- function(MyDataFileName, sheetName = NULL)
   return(data)
 }
   
-
+# Remove outliers using 3*IQR
 outlierRemove <- function(df, variable_intrest)
 {
   quantile2575 <- apply(df[, variable_intrest], 2, function(x) quantile(x, probs = c(0.25, 0.75), na.rm = T))
@@ -44,8 +42,6 @@ outlierRemove <- function(df, variable_intrest)
 dataQualityPlot <- function(pheno, var.list, Tag, groupVar = NULL, stackratio = 0.8, width = 9, height = 3){
   if(!'data.frame' %in% class(pheno))
     stop("pheno type data must be in data.frame!")
-  
-  
   dir.create(file.path(result_folder, "QC_plot_Raw_data"))
   for(var in var.list){
     if (is.null(groupVar))
@@ -86,8 +82,6 @@ dataQualityPlot <- function(pheno, var.list, Tag, groupVar = NULL, stackratio = 
 dataQualityPlot_out_RM <- function(pheno, var.list,  Tag, groupVar = NULL, stackratio = 0.8, width = 9, height = 3){
   if(!'data.frame' %in% class(pheno))
     stop("pheno type data must be in data.frame!")
-  
-  
   dir.create(file.path(result_folder, "QC_plot_Out_RM"))
   for(var in var.list){
     if (is.null(groupVar))
@@ -118,7 +112,6 @@ dataQualityPlot_out_RM <- function(pheno, var.list,  Tag, groupVar = NULL, stack
                              ggtitle('Box plot with dots') +
                              theme(plot.title=element_text(face='bold', size=8))
                              ")))
-    
     print(b,vp = vp1)        ## suggested by @bpatiste
     dev.off()
   }
