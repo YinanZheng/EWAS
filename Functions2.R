@@ -39,3 +39,39 @@ statsummary <- function(d,type){
     names(res) = c("M_Min","M_1stQuartile", "M_Median","M_Mean","M_3rdQuartile","M_Max","M_IQR","M_SD")
   return(res)
 }
+
+
+
+
+#### Modeling functions:
+
+## RLM
+f.RLM.Adjusted.Robust.par <- function(methcol, HEAD, VAR, COV=NULL, tdatRUN) { 
+  
+  model_statement<-eval(parse(text=paste0(HEAD, colnames(COV), collapse = "+" )))
+  
+  bigdata <- na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV))
+  bigdata <- data.frame(bigdata) 
+  
+  mod <- try(rlm(model_statement, bigdata, maxit=200))
+  # pull out a data.frame with results
+  if(class(mod) == "try-error"){
+    b <- rep(NA, 20)
+  } else {
+    cf <- try(coeftest(mod, vcov=vcovHC(mod, type="HC0")))
+    if(class(cf) == "try-error"){
+      b <- rep(NA, 20)
+    } else {b <- c(cf[2, c("Estimate", "Std. Error", "Pr(>|z|)")],nrow(bigdata),
+                   statsummary(2^bigdata$methy/(2^bigdata$methy + 1),"beta"),
+                   statsummary(bigdata$methy,"M"))
+    }
+  }
+  invisible(b)
+}
+
+
+## LM
+# TODO
+
+## LOGISTIC
+# TODO
