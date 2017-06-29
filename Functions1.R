@@ -46,6 +46,7 @@ outlierRemove <- function(df, variable_intrest)
   extremeUpper <- quantile2575[2,] + 3 * IQR
   extremeLower <- quantile2575[1,] - 3 * IQR
   ind <- t((t(df[, variable_intrest]) > extremeUpper | t(df[, variable_intrest]) < extremeLower))
+  message(paste0(nrow(ind), " outlier detected!"))
   df[, variable_intrest][ind] <- NA  
   return(df)
 }
