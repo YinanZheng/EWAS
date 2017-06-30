@@ -21,13 +21,15 @@ loadMyData <- function(MyDataFileName, sheetName = NULL)
   
   if(suffix %in% c("xlsx", "xls"))
   {
+    message("excel file detected.")
     wb <- loadWorkbook(file.path(data_folder, MyDataFileName))
     data <- readWorksheet(wb, sheetName)
   } 
   
   if(suffix == "rds")
   {
-    data <- readRDS(MyDataFileName)
+    message("rds file detected.")
+    data <- readRDS(file.path(data_folder, MyDataFileName))
   }
   
   if("ID" %in% colnames(data))
