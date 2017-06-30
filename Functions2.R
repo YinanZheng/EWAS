@@ -1,5 +1,15 @@
 ## Function to export results
 ##
+rm(export_results)
+rm(lambda)
+rm(publishFormat)
+rm(sigResults)
+rm(statsummary)
+
+rm(f.RLM.Adjusted.Robust.par)
+
+### Formating function:
+
 export_results <- function(modresults, Year, modelname,datatype, cells,result_folder, outcomeVar){
   # collapse list of data.frames back to a data.table
   # rename
@@ -40,10 +50,7 @@ statsummary <- function(d,type){
   return(res)
 }
 
-
-
-
-#### Modeling functions:
+### Modeling functions:
 
 ## RLM
 f.RLM.Adjusted.Robust.par <- function(methcol, HEAD, VAR, COV=NULL, tdatRUN) { 
@@ -69,12 +76,10 @@ f.RLM.Adjusted.Robust.par <- function(methcol, HEAD, VAR, COV=NULL, tdatRUN) {
   invisible(b)
 }
 
-
 ## LM
 # TODO
 
 ## LOGISTIC
 # TODO
-
 
 message("Function2.R loaded!")

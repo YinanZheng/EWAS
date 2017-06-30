@@ -1,5 +1,11 @@
 ### Functions for EWAS Pipeline
 
+rm(addlogtransform)
+rm(loadMyData)
+rm(outlierRemove)
+rm(dataQualityPlot)
+rm(dataQualityPlot_out_RM)
+
 # function to add log-transformed variables (optional)
 addlogtransform <- function(pheno, var.list, base = exp(1)){
   if(!'data.frame' %in% class(pheno))
@@ -52,7 +58,6 @@ outlierRemove <- function(df, variable_intrest)
   df[, variable_intrest][ind] <- NA  
   return(df)
 }
-
 
 # QC plot for variable of intrest in raw data
 dataQualityPlot <- function(pheno, var.list, Tag, groupVar = NULL, stackratio = 0.8, width = 9, height = 3){
