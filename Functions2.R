@@ -75,3 +75,6 @@ f.RLM.Adjusted.Robust.par <- function(methcol, HEAD, VAR, COV=NULL, tdatRUN) {
 
 ## LOGISTIC
 # TODO
+
+
+message("Function2.R loaded!")
