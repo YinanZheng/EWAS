@@ -1,12 +1,12 @@
 ## Function to export results
 ##
-rm(export_results)
-rm(lambda)
-rm(publishFormat)
-rm(sigResults)
-rm(statsummary)
+suppressWarnings(rm(export_results))
+suppressWarnings(rm(lambda))
+suppressWarnings(rm(publishFormat))
+suppressWarnings(rm(sigResults))
+suppressWarnings(rm(statsummary))
 
-rm(f.RLM.Adjusted.Robust.par)
+suppressWarnings(rm(f.RLM.Adjusted.Robust.par))
 
 ### Formating function:
 

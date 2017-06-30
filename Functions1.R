@@ -1,10 +1,10 @@
 ### Functions for EWAS Pipeline
 
-rm(addlogtransform)
-rm(loadMyData)
-rm(outlierRemove)
-rm(dataQualityPlot)
-rm(dataQualityPlot_out_RM)
+suppressWarnings(rm(addlogtransform))
+suppressWarnings(rm(loadMyData))
+suppressWarnings(rm(outlierRemove))
+suppressWarnings(rm(dataQualityPlot))
+suppressWarnings(rm(dataQualityPlot_out_RM))
 
 # function to add log-transformed variables (optional)
 addlogtransform <- function(pheno, var.list, base = exp(1)){
