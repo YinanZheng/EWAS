@@ -60,7 +60,7 @@ statsummary <- function(bigdata){
 # methcol = setNames(seq_len(ncol(tdatRUN)), dimnames(tdatRUN)[[2]])[1]
 
 ## RLM
-f.RLM.Adjusted.Robust.par <- function(methcol, VAR, model_statement, tdatRUN) { 
+f.RLM.Adjusted.Robust.par <- function(methcol, VAR, COV, model_statement, tdatRUN) { 
   
   bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV)))
 
