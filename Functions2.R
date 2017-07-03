@@ -41,36 +41,40 @@ sigResults <- function(results, psigcut = psigcut, rounddigit = 3){
   return(results)
 }
 
-statsummary <- function(d,type){
-  res = c(min(d),quantile(d,0.25),median(d),mean(d),quantile(d,0.75),max(d),IQR(d),sd(d))
-  if(type == "beta")
-    names(res) = c("beta_Min","beta_1stQuartile", "beta_Median","beta_Mean","beta_3rdQuartile","beta_Max","beta_IQR","beta_SD")
-  if(type == "M")
-    names(res) = c("M_Min","M_1stQuartile", "M_Median","M_Mean","M_3rdQuartile","M_Max","M_IQR","M_SD")
+# Add summary of statistics of the tested CpG sites (will add 17 columns)
+statsummary <- function(bigdata){
+  samplesize <- nrow(bigdata)
+  Mval <- bigdata$methy
+  betaVal <- 2^Mval/(2^Mval + 1)
+  
+  res = c(samplesize, min(betaVal),quantile(betaVal,0.25),median(betaVal),mean(betaVal),quantile(betaVal,0.75),max(betaVal),IQR(betaVal),sd(betaVal),
+          min(Mval),quantile(Mval,0.25),median(Mval),mean(Mval),quantile(Mval,0.75),max(Mval),IQR(Mval),sd(Mval))
+  names(res) = c("Sample_Size","beta_Min","beta_1stQuartile", "beta_Median","beta_Mean","beta_3rdQuartile","beta_Max","beta_IQR","beta_SD",
+                 "M_Min","M_1stQuartile", "M_Median","M_Mean","M_3rdQuartile","M_Max","M_IQR","M_SD")
   return(res)
 }
 
 ### Modeling functions:
 
+## Debug
+methcol = setNames(seq_len(ncol(tdatRUN)), dimnames(tdatRUN)[[2]])[1]
+COV = Covariates
+
+
 ## RLM
-f.RLM.Adjusted.Robust.par <- function(methcol, HEAD, VAR, COV=NULL, tdatRUN) { 
+f.RLM.Adjusted.Robust.par <- function(methcol, VAR, model_statement, tdatRUN) { 
   
-  model_statement<-eval(parse(text=paste0(HEAD, colnames(COV), collapse = "+" )))
-  
-  bigdata <- na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV))
-  bigdata <- data.frame(bigdata) 
-  
+  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV)))
+
   mod <- try(rlm(model_statement, bigdata, maxit=200))
   # pull out a data.frame with results
-  if(class(mod) == "try-error"){
-    b <- rep(NA, 20)
+  if("try-error" %in% class(mod)){
+    b <- rep(NA, 21)
   } else {
     cf <- try(coeftest(mod, vcov=vcovHC(mod, type="HC0")))
     if(class(cf) == "try-error"){
-      b <- rep(NA, 20)
-    } else {b <- c(cf[2, c("Estimate", "Std. Error", "Pr(>|z|)")],nrow(bigdata),
-                   statsummary(2^bigdata$methy/(2^bigdata$methy + 1),"beta"),
-                   statsummary(bigdata$methy,"M"))
+      b <- rep(NA, 21)
+    } else {b <- c(cf[2,], statsummary(bigdata))
     }
   }
   invisible(b)
