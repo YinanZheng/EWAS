@@ -10,14 +10,15 @@ suppressWarnings(rm(f.RLM.Adjusted.Robust.par))
 
 ### Formating function:
 
-export_results <- function(modresults, Year, modelname,datatype, cells,result_folder, outcomeVar, rounddigit = rounddigit){
+export_results <- function(modresults, Year, modelname,datatype, cells, nPC, result_folder, outcomeVar, rounddigit = rounddigit){
   # collapse list of data.frames back to a data.table
   # rename
   modresults <- data.frame(modresults)
   colnames(modresults)[1:4] = c("Estimates","StdErr", "Stat","Pvalue")
   modresults$Sample_Size = as.integer(modresults$Sample_Size)
   modresults <- publishFormat(modresults, rounddigit = rounddigit)
-  saveRDS(modresults, file = paste0(result_folder, paste0(Year, "_", outcomeVar,"_",modelname,"_",datatype,"_",cells,"_",Sys.Date(),".RDS"))) 
+  saveRDS(modresults, file = paste0(result_folder, 
+                                    paste0(Year, "_", outcomeVar,"_",modelname,"_",datatype,"_",cells,"_", nPC,"PC_",Sys.Date(),".RDS"))) 
   return(modresults)
 }
 
@@ -42,10 +43,19 @@ sigResults <- function(results, psigcut = psigcut, rounddigit = rounddigit){
 }
 
 # Add summary of statistics of the tested CpG sites (will add 17 columns)
-statsummary <- function(bigdata){
+statsummary <- function(bigdata, type){
   samplesize <- nrow(bigdata)
-  Mval <- bigdata$methy
-  betaVal <- 2^Mval/(2^Mval + 1)
+  if(type == "Mval")
+  {
+    Mval <- bigdata$methy
+    betaVal <- 2^Mval/(2^Mval + 1)
+  }
+
+  if(type == "beta")
+  {
+    betaVal <- bigdata$methy
+    Mval <- log2(betaVal/(1-betaVal))
+  }
   
   res = c(samplesize, min(betaVal),quantile(betaVal,0.25),median(betaVal),mean(betaVal),quantile(betaVal,0.75),max(betaVal),IQR(betaVal),sd(betaVal),
           min(Mval),quantile(Mval,0.25),median(Mval),mean(Mval),quantile(Mval,0.75),max(Mval),IQR(Mval),sd(Mval))
@@ -60,7 +70,7 @@ statsummary <- function(bigdata){
 # methcol = setNames(seq_len(ncol(tdatRUN)), dimnames(tdatRUN)[[2]])[1]
 
 ## RLM
-f.RLM.Adjusted.Robust.par <- function(methcol, VAR, COV, model_statement, tdatRUN) { 
+f.RLM.Adjusted.Robust.par <- function(methcol, VAR, COV, model_statement, datatype, tdatRUN) { 
   
   bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV)))
 
@@ -72,7 +82,7 @@ f.RLM.Adjusted.Robust.par <- function(methcol, VAR, COV, model_statement, tdatRU
     cf <- try(coeftest(mod, vcov=vcovHC(mod, type="HC0")))
     if(class(cf) == "try-error"){
       b <- rep(NA, 21)
-    } else {b <- c(cf[2,], statsummary(bigdata))
+    } else {b <- c(cf[2,], statsummary(bigdata, datatype))
     }
   }
   invisible(b)
