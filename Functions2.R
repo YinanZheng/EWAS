@@ -10,34 +10,34 @@ suppressWarnings(rm(f.RLM.Adjusted.Robust.par))
 
 ### Formating function:
 
-export_results <- function(modresults, Year, modelname,datatype, cells,result_folder, outcomeVar){
+export_results <- function(modresults, Year, modelname,datatype, cells,result_folder, outcomeVar, rounddigit = rounddigit){
   # collapse list of data.frames back to a data.table
   # rename
   modresults <- data.frame(modresults)
-  colnames(modresults)[1:4] = c("coef","se", "pvalue","samplesize")
-  modresults$samplesize = as.integer(modresults$samplesize)
-  save(modresults, file = paste0(result_folder, paste0(Year, "_", outcomeVar,"_",modelname,"_",datatype,"_",cells,"_",Sys.Date(),".RData"))) 
+  colnames(modresults)[1:4] = c("Estimates","StdErr", "Stat","Pvalue")
+  modresults$Sample_Size = as.integer(modresults$Sample_Size)
+  modresults <- publishFormat(modresults, rounddigit = rounddigit)
+  saveRDS(modresults, file = paste0(result_folder, paste0(Year, "_", outcomeVar,"_",modelname,"_",datatype,"_",cells,"_",Sys.Date(),".RDS"))) 
   return(modresults)
 }
 
 lambda <- function(p) median(qchisq(p, df=1, lower.tail=FALSE), na.rm=TRUE) / qchisq(0.5, df=1)
 
 publishFormat<-function(res, rounddigit = 3){
-  res$lower<-res[,1]-1.96*res[,2]
-  res$upper<-res[,1]+1.96*res[,2]
-  res$beta <- round(res[,1], rounddigit)
+  res$lower<-res[,"Estimates"]-1.96*res[,"StdErr"]
+  res$upper<-res[,"Estimates"]+1.96*res[,"StdErr"]
+  res$beta <- round(res[,"Estimates"], rounddigit)
   res$CI <- paste0("(",round(res$lower, rounddigit),", ",round(res$upper, rounddigit),")")
-  res$p <- round(res[,3], rounddigit)
+  res$p <- round(res[,"Pvalue"], rounddigit)
   return(res)
 }
 
-sigResults <- function(results, psigcut = psigcut, rounddigit = 3){
-  results <- publishFormat(results)
+sigResults <- function(results, psigcut = psigcut, rounddigit = rounddigit){
   results <- na.omit(results)
-  results$p.FDR<-p.adjust(results$pvalue,"fdr")
-  results$qvalue<-qvalue(results$pvalue)$qvalues
-  results<-results[results$pvalue<psigcut,]
-  results<-results[order(results$pvalue),]
+  results$p.FDR<-p.adjust(results$Pvalue,"fdr")
+  results$qvalue<-qvalue(results$Pvalue)$qvalues
+  results<-results[results$Pvalue<psigcut,]
+  results<-results[order(results$Pvalue),]
   return(results)
 }
 
@@ -57,9 +57,7 @@ statsummary <- function(bigdata){
 ### Modeling functions:
 
 ## Debug
-methcol = setNames(seq_len(ncol(tdatRUN)), dimnames(tdatRUN)[[2]])[1]
-COV = Covariates
-
+# methcol = setNames(seq_len(ncol(tdatRUN)), dimnames(tdatRUN)[[2]])[1]
 
 ## RLM
 f.RLM.Adjusted.Robust.par <- function(methcol, VAR, model_statement, tdatRUN) { 
