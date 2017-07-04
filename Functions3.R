@@ -126,7 +126,7 @@ ewas_diagPlot <- function(modresults, NAMES_LIST, width = 7, height = 7){
 }
 
 
-heatmap_function <- function(m_sub, NAMES_LIST, CONFIG){
+heatmap_function <- function(m_sub, NAMES_LIST, HM_CONFIG){
   # read in sig results
   
   modresults <- read.csv(paste0(result_folder, paste0(NAMES_LIST$cohortname, "_", NAMES_LIST$Year, "_", NAMES_LIST$VAR,"_",
@@ -152,10 +152,10 @@ heatmap_function <- function(m_sub, NAMES_LIST, CONFIG){
     beta <- beta[, -na.ind]
   }
   data.diff.top <- beta
-  data.dist <- dist(as.matrix(data.diff.top), method = CONFIG$dist_method)
-  row.clus <- hclust(data.dist, method = CONFIG$clust_method)
-  data.dist.g <- dist(t(beta), method = CONFIG$dist_method)
-  col.clus <- hclust(data.dist.g,  method = CONFIG$clust_method)
+  data.dist <- dist(as.matrix(data.diff.top), method = HM_CONFIG$dist_method)
+  row.clus <- hclust(data.dist, method = HM_CONFIG$clust_method)
+  data.dist.g <- dist(t(beta), method = HM_CONFIG$dist_method)
+  col.clus <- hclust(data.dist.g,  method = HM_CONFIG$clust_method)
   ColSideColors= factor(c("orange", "blue"))[col.factor]
   
   colors = c(seq(-4,-0.535353535,length=100),seq(-0.5,0.5,length=100),seq(0.535353535,4,length=100))
@@ -164,7 +164,7 @@ heatmap_function <- function(m_sub, NAMES_LIST, CONFIG){
   lab.factor <- col.factor
   png(file = paste0(result_folder, "Heatmap_", NAMES_LIST$corhortname, "_", NAMES_LIST$Year, "_", 
                     NAMES_LIST$VAR, "_", NAMES_LIST$modelname, "_" NAMES_LIST$tag, "_CpGtop", NAMES_LIST$num,".png"), 
-      width = CONFIG$hmWidth, height = CONFIG$hmHeight, res=300, unit="in")
+      width = HM_CONFIG$hmWidth, height = HM_CONFIG$hmHeight, res=300, unit="in")
   heatmap.2(as.matrix(data.diff.top), 
             main = paste0(outcomeVar),
             Rowv = as.dendrogram(row.clus),
