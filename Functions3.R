@@ -139,7 +139,7 @@ heatmap_function <- function(m_sub, NAMES_LIST, HM_CONFIG){
   # modresults <- modresults[modresults$samplesize==max_sample, ]
   # dim(modresults)
 
-  CpG_top <- rownames(modresults)[1:num]
+  CpG_top <- rownames(modresults)[1:NtopCpG]
   m_sub <- m_sub[CpG_top, ]
   beta <- 2^m_sub/(2^m_sub + 1)
   data <- df_var[,outcomeVar]
@@ -163,7 +163,7 @@ heatmap_function <- function(m_sub, NAMES_LIST, HM_CONFIG){
   
   lab.factor <- col.factor
   png(file = paste0(result_folder, "Heatmap_", NAMES_LIST$corhortname, "_", NAMES_LIST$Year, "_", 
-                    NAMES_LIST$VAR, "_", NAMES_LIST$modelname, "_" NAMES_LIST$tag, "_CpGtop", NAMES_LIST$num,".png"), 
+                    NAMES_LIST$VAR, "_", NAMES_LIST$modelname, "_" NAMES_LIST$tag, "_CpGtop", NAMES_LIST$NtopCpG,".png"), 
       width = HM_CONFIG$hmWidth, height = HM_CONFIG$hmHeight, res=300, unit="in")
   heatmap.2(as.matrix(data.diff.top), 
             main = paste0(outcomeVar),
