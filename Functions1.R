@@ -1,4 +1,4 @@
-### Functions for EWAS Pipeline
+### Functions for EWAS Pipeline-1
 
 suppressWarnings(rm(addlogtransform))
 suppressWarnings(rm(loadMyData))
