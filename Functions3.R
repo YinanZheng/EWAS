@@ -48,7 +48,7 @@ myqqplot <- function(pvector, p0 = -8, col=c("#A0A0A0", "#000000"),showCI = T, .
 # }
 
 ewas_diagPlot <- function(modresults, NAMES_LIST, width = 7, height = 7){
-  png(paste0(result_folder, "DiagnosticPlot_", NAMES_LIST$corhortname, "_", NAMES_LIST$Year, "_", 
+  png(paste0(result_folder, "DiagnosticPlot_", NAMES_LIST$cohortname, "_", NAMES_LIST$Year, "_", 
              NAMES_LIST$VAR, "_", NAMES_LIST$modelname, "_", NAMES_LIST$tag, ".png"), width = width, height = height, unit = "in", res = 300)
   
   par(mfrow=c(2,2), mar = c(5,5,2,2), oma=c(0,0,0,0))
@@ -141,7 +141,7 @@ heatmap_function <- function(m_sub, NAMES_LIST, HM_CONFIG){
   CpG_top <- rownames(modresults)[1:NtopCpG]
   m_sub <- m_sub[CpG_top, ]
   beta <- 2^m_sub/(2^m_sub + 1)
-  data <- df_var[,outcomeVar]
+  data <- df_var[,NAMES_LIST$VAR]
   ##
   col.factor <- factor(data, levels=c("High", "Low"))
   
@@ -161,11 +161,11 @@ heatmap_function <- function(m_sub, NAMES_LIST, HM_CONFIG){
   my_palette <- colorRampPalette(c("red", "black", "green"))(n = 299)
   
   lab.factor <- col.factor
-  png(file = paste0(result_folder, "Heatmap_", NAMES_LIST$corhortname, "_", NAMES_LIST$Year, "_", 
+  png(file = paste0(result_folder, "Heatmap_", NAMES_LIST$cohortname, "_", NAMES_LIST$Year, "_", 
                     NAMES_LIST$VAR, "_", NAMES_LIST$modelname, "_", NAMES_LIST$tag, "_CpGtop", NAMES_LIST$NtopCpG,".png"), 
       width = HM_CONFIG$hmWidth, height = HM_CONFIG$hmHeight, res=300, unit="in")
   heatmap.2(as.matrix(data.diff.top), 
-            main = paste0(outcomeVar),
+            main = paste0(NAMES_LIST$VAR),
             Rowv = as.dendrogram(row.clus),
             Colv = as.dendrogram(col.clus),
             dendrogram="both",
