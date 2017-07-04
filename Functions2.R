@@ -13,7 +13,8 @@ suppressWarnings(rm(f.RLM.Adjusted.Robust.par))
 
 ### Formating function:
 
-export_results <- function(modresults, Year, outcomeVar, modelname, datatype, cells, nPC, tag, result_folder, rounddigit = rounddigit){
+export_results <- function(modresults, cohortname, Year, outcomeVar, modelname, datatype, 
+                           cells, nPC, tag, result_folder, rounddigit = rounddigit){
   # collapse list of data.frames back to a data.table
   # rename
   modresults <- data.frame(modresults)
@@ -21,7 +22,7 @@ export_results <- function(modresults, Year, outcomeVar, modelname, datatype, ce
   modresults$Sample_Size = as.integer(modresults$Sample_Size)
   modresults <- publishFormat(modresults, rounddigit = rounddigit)
   saveRDS(modresults, file = paste0(result_folder, 
-                                    paste0(Year, "_", outcomeVar,"_",modelname,"_",datatype,"_",cells,"_", nPC,"PC_",tag,"_",Sys.Date(),".RDS"))) 
+                                    paste0(cohortname, "_", Year, "_", outcomeVar,"_",modelname,"_",datatype,"_",cells,"_", nPC,"PC_",tag,"_",Sys.Date(),".RDS"))) 
   return(modresults)
 }
 

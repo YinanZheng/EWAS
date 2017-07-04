@@ -2,7 +2,6 @@
 
 suppressWarnings(rm(export_results))
 suppressWarnings(rm(myqqplot))
-suppressWarnings(rm(my.legend))
 suppressWarnings(rm(ewas_diagPlot))
 suppressWarnings(rm(heatmap_function))
 
@@ -39,14 +38,14 @@ myqqplot <- function(pvector, p0 = -8, col=c("#A0A0A0", "#000000"),showCI = T, .
   abline(a=0,b=1,col=rgb(1,0.65,0),lty=1)
 }
 
-# legend bottom-margin P-value adjust
-my.legend = function(...) {
-  opar <- par(fig=c(0,1,0,1), oma=c(0,0,0,0),
-              mar=c(0,0,0,0), new=TRUE)
-  on.exit(par(opar))
-  plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n')
-  legend(...)
-}
+# # legend bottom-margin P-value adjust
+# my.legend = function(...) {
+#   opar <- par(fig=c(0,1,0,1), oma=c(0,0,0,0),
+#               mar=c(0,0,0,0), new=TRUE)
+#   on.exit(par(opar))
+#   plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n')
+#   legend(...)
+# }
 
 ewas_diagPlot <- function(modresults, nametag, Year, width = 1600, height = 1500){
   png(paste0(result_folder, "DiagnosticPlot_", Year, "_", nametag, ".png"), width = width, height = height, unit = "px", res = 200)
@@ -126,21 +125,18 @@ ewas_diagPlot <- function(modresults, nametag, Year, width = 1600, height = 1500
 }
 
 
-heatmap_function <- function(Year, outcomeVar, num, Date){
+heatmap_function <- function(cohortname, Year, outcomeVar, m_sub, num, Date){
   # read in sig results
-  modresults <- read.csv(paste0(result_folder, paste0(Year, "_", outcomeVar,"_",modelname,"_",datatype,"_",cells,"_",Date,".csv")), 
+  modresults <- read.csv(paste0(result_folder, paste0(cohortname, "_", Year, "_", outcomeVar,"_",modelname,"_",datatype,"_",cells,"_",Date,".csv")), 
                          stringsAsFactors = F, row.names=1)
-  dim(modresults)
-  # [1] 87073    28
+  # dim(modresults)
   # find max sample size
-  max_sample <- max(modresults$samplesize)
-  modresults <- modresults[modresults$samplesize==max_sample, ]
-  dim(modresults)
-  # [1] 76547    28
-  
-  # num <- 50
-  CpG_top50 <- rownames(modresults)[1:num]
-  m_sub <- m_sub[CpG_top50, ]
+  # max_sample <- max(modresults$samplesize)
+  # modresults <- modresults[modresults$samplesize==max_sample, ]
+  # dim(modresults)
+
+  CpG_top <- rownames(modresults)[1:num]
+  m_sub <- m_sub[CpG_top, ]
   beta <- 2^m_sub/(2^m_sub + 1)
   data <- df_var[,outcomeVar]
   ##
