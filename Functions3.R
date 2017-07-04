@@ -191,3 +191,5 @@ heatmap_function <- function(Year, outcomeVar, num, Date){
          cex = 1.5)
   dev.off()
 }
+
+message("Function3.R loaded!")
