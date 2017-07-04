@@ -1,8 +1,5 @@
 ### Functions for EWAS Pipeline-2
 
-
-## Function to export results
-##
 suppressWarnings(rm(export_results))
 suppressWarnings(rm(publishFormat))
 suppressWarnings(rm(sigResults))
@@ -10,8 +7,7 @@ suppressWarnings(rm(statsummary))
 
 suppressWarnings(rm(f.RLM.Adjusted.Robust.par))
 
-### Formating function:
-
+## Function to export results
 export_results <- function(modresults, NAMES_LIST, result_folder, rounddigit = rounddigit){
   # collapse list of data.frames back to a data.table
   # rename

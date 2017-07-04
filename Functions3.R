@@ -1,6 +1,6 @@
 ### Functions for EWAS Pipeline-3
 
-suppressWarnings(rm(export_results))
+suppressWarnings(rm(lambda))
 suppressWarnings(rm(myqqplot))
 suppressWarnings(rm(ewas_diagPlot))
 suppressWarnings(rm(heatmap_function))
@@ -124,7 +124,6 @@ ewas_diagPlot <- function(modresults, NAMES_LIST, width = 7, height = 7){
   
   dev.off()
 }
-
 
 heatmap_function <- function(m_sub, NAMES_LIST, HM_CONFIG){
   # read in sig results
