@@ -4,7 +4,6 @@
 ## Function to export results
 ##
 suppressWarnings(rm(export_results))
-suppressWarnings(rm(lambda))
 suppressWarnings(rm(publishFormat))
 suppressWarnings(rm(sigResults))
 suppressWarnings(rm(statsummary))
@@ -13,8 +12,7 @@ suppressWarnings(rm(f.RLM.Adjusted.Robust.par))
 
 ### Formating function:
 
-export_results <- function(modresults, cohortname, Year, outcomeVar, modelname, datatype, 
-                           cells, nPC, tag, result_folder, rounddigit = rounddigit){
+export_results <- function(modresults, NAMES_LIST, result_folder, rounddigit = rounddigit){
   # collapse list of data.frames back to a data.table
   # rename
   modresults <- data.frame(modresults)
@@ -22,11 +20,11 @@ export_results <- function(modresults, cohortname, Year, outcomeVar, modelname, 
   modresults$Sample_Size = as.integer(modresults$Sample_Size)
   modresults <- publishFormat(modresults, rounddigit = rounddigit)
   saveRDS(modresults, file = paste0(result_folder, 
-                                    paste0(cohortname, "_", Year, "_", outcomeVar,"_",modelname,"_",datatype,"_",cells,"_", nPC,"PC_",tag,"_",Sys.Date(),".RDS"))) 
+                                    paste0(NAMES_LIST$cohortname, "_", NAMES_LIST$Year, "_", NAMES_LIST$VAR,"_",NAMES_LIST$modelname,"_",
+                                           NAMES_LIST$datatype,"_",NAMES_LIST$cells,"_", NAMES_LIST$nPC,"PC_", NAMES_LIST$tag,"_",Sys.Date(),".RDS"))) 
+  message("EWAS results exported!")
   return(modresults)
 }
-
-lambda <- function(p) median(qchisq(p, df=1, lower.tail=FALSE), na.rm=TRUE) / qchisq(0.5, df=1)
 
 publishFormat<-function(res, rounddigit = 3){
   res$lower<-res[,"Estimates"]-1.96*res[,"StdErr"]
@@ -37,13 +35,18 @@ publishFormat<-function(res, rounddigit = 3){
   return(res)
 }
 
-sigResults <- function(results, psigcut = psigcut, rounddigit = rounddigit){
+sigResults <- function(results, annotcord, NAMES_LIST, psigcut = psigcut, rounddigit = rounddigit){
   results <- na.omit(results)
   results$p.FDR<-p.adjust(results$Pvalue,"fdr")
   results$qvalue<-qvalue(results$Pvalue)$qvalues
   results<-results[results$Pvalue<psigcut,]
   results<-results[order(results$Pvalue),]
-  return(results)
+  
+  # Add annotation
+  results = cbind(results,annotcord[match(rownames(results),annotcord$Name),])
+  write.csv(results, paste0(result_folder, paste0(NAMES_LIST$cohortname, "_", NAMES_LIST$Year, "_", NAMES_LIST$VAR,"_", NAMES_LIST$modelname,"_",
+                                                  NAMES_LIST$datatype,"_", NAMES_LIST$cells,"_", NAMES_LIST$nPC,"PC_", NAMES_LIST$tag,"_",Sys.Date(),".csv")))
+  message("Signficant results exported!")
 }
 
 # Add summary of statistics of the tested CpG sites (will add 17 columns)

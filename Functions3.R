@@ -47,23 +47,24 @@ myqqplot <- function(pvector, p0 = -8, col=c("#A0A0A0", "#000000"),showCI = T, .
 #   legend(...)
 # }
 
-ewas_diagPlot <- function(modresults, nametag, Year, width = 1600, height = 1500){
-  png(paste0(result_folder, "DiagnosticPlot_", Year, "_", nametag, ".png"), width = width, height = height, unit = "px", res = 200)
+ewas_diagPlot <- function(modresults, NAMES_LIST, width = 7, height = 7){
+  png(paste0(result_folder, "DiagnosticPlot_", NAMES_LIST$corhortname, "_", NAMES_LIST$Year, "_", 
+             NAMES_LIST$VAR, "_", NAMES_LIST$modelname, "_" NAMES_LIST$tag, ".png"), width = width, height = height, unit = "in", res = 300)
   
   par(mfrow=c(2,2), mar = c(5,5,2,2), oma=c(0,0,0,0))
   
   ##############################################
   ###      Histograms of sample size
   ##############################################
-  hist(modresults$samplesize,
+  hist(modresults$Sample_Size,
        main="Sample Size Histogram",
        xlab="Sample Size", col="grey")
   
-  max_sample <- max(modresults$samplesize)
-  modresults <- modresults[modresults$samplesize==max_sample, ]
-  
-  pval <- modresults$pvalue
-  coef <- modresults$coef
+  # max_sample <- max(modresults$Sample_Size)
+  # modresults <- modresults[modresults$Sample_Size==max_sample, ]
+ 
+  pval <- modresults$Pvalue
+  coef <- modresults$Estimates
   nCpG <- length(pval)
   
   ##############################################
@@ -125,9 +126,12 @@ ewas_diagPlot <- function(modresults, nametag, Year, width = 1600, height = 1500
 }
 
 
-heatmap_function <- function(cohortname, Year, outcomeVar, m_sub, num, Date){
+heatmap_function <- function(m_sub, NAMES_LIST, CONFIG){
   # read in sig results
-  modresults <- read.csv(paste0(result_folder, paste0(cohortname, "_", Year, "_", outcomeVar,"_",modelname,"_",datatype,"_",cells,"_",Date,".csv")), 
+  
+  modresults <- read.csv(paste0(result_folder, paste0(NAMES_LIST$cohortname, "_", NAMES_LIST$Year, "_", NAMES_LIST$VAR,"_",
+                                                      NAMES_LIST$modelname,"_",NAMES_LIST$datatype,"_",NAMES_LIST$cells,"_", 
+                                                      NAMES_LIST$nPC,"PC_",NAMES_LIST$tag,"_", NAMES_LIST$Date,".csv")), 
                          stringsAsFactors = F, row.names=1)
   # dim(modresults)
   # find max sample size
@@ -148,24 +152,26 @@ heatmap_function <- function(cohortname, Year, outcomeVar, m_sub, num, Date){
     beta <- beta[, -na.ind]
   }
   data.diff.top <- beta
-  data.dist <- dist(as.matrix(data.diff.top), method = "euclidean")
-  row.clus <- hclust(data.dist, method = "complete")
-  data.dist.g <- dist(t(beta), method="euclidean")
-  col.clus <- hclust(data.dist.g,  method = "complete")
-  ColSideColors= factor(c("orange", "blue"))[ col.factor]
+  data.dist <- dist(as.matrix(data.diff.top), method = CONFIG$dist_method)
+  row.clus <- hclust(data.dist, method = CONFIG$clust_method)
+  data.dist.g <- dist(t(beta), method = CONFIG$dist_method)
+  col.clus <- hclust(data.dist.g,  method = CONFIG$clust_method)
+  ColSideColors= factor(c("orange", "blue"))[col.factor]
   
-  colors = c(seq(-4,-0.5,length=100),seq(-0.5,0.5,length=100),seq(0.5,4,length=100))
+  colors = c(seq(-4,-0.535353535,length=100),seq(-0.5,0.5,length=100),seq(0.535353535,4,length=100))
+  my_palette <- colorRampPalette(c("red", "black", "green"))(n = 299)
   
   lab.factor <- col.factor
-  png(file = paste0(result_folder,  Year, "_", outcomeVar, "_heatmap_top", num,".png"), width = 10, height = 10, res=300, unit="in")
+  png(file = paste0(result_folder, "Heatmap_", NAMES_LIST$corhortname, "_", NAMES_LIST$Year, "_", 
+                    NAMES_LIST$VAR, "_", NAMES_LIST$modelname, "_" NAMES_LIST$tag, "_CpGtop", NAMES_LIST$num,".png"), 
+      width = CONFIG$hmWidth, height = CONFIG$hmHeight, res=300, unit="in")
   heatmap.2(as.matrix(data.diff.top), 
             main = paste0(outcomeVar),
-            Rowv = as.dendrogram(row.clus), # apply default clustering method
+            Rowv = as.dendrogram(row.clus),
             Colv = as.dendrogram(col.clus),
             dendrogram="both",
-            breaks=colors, 
             scale="row",
-            col=redgreen(250),
+            col=my_palette,
             cex.main = 2,
             cexRow = 1.4,
             cexCol =1,
@@ -176,7 +182,6 @@ heatmap_function <- function(cohortname, Year, outcomeVar, m_sub, num, Date){
             labRow=rownames(data.diff.top),
             labCol=colnames(data.diff.top),
             margins = c(10, 8),
-            # lwid = lwid, 
             lhei = c(2, 10)
   )
   legend("topright", levels(lab.factor), xpd = TRUE, horiz = TRUE,
