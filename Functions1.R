@@ -23,18 +23,18 @@ loadMyData <- function(MyDataFileName, sheetName = NULL)
   suffix <- unlist(strsplit(MyDataFileName,"\\."))[2]
   
   if(suffix == "csv")
-    stop("csv format is not allowed!")
+    stop(".csv format is not allowed!")
   
   if(suffix %in% c("xlsx", "xls"))
   {
-    message("excel file detected.")
+    message("Excel file detected.")
     wb <- loadWorkbook(file.path(data_folder, MyDataFileName))
     data <- readWorksheet(wb, sheetName)
   } 
   
   if(suffix == "rds")
   {
-    message("rds file detected.")
+    message(".rds file detected.")
     data <- readRDS(file.path(data_folder, MyDataFileName))
   }
   
