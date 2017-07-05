@@ -185,10 +185,10 @@ heatmap_function <- function(m_sub, NAMES_LIST, HM_CONFIG){
   )
   legend("topright", levels(lab.factor), xpd = TRUE, horiz = TRUE,
          title = "",
-         inset = c(0,-0.06), bty = "n",
+         inset = c(-0.01,-0.04), bty = "n",
          fill=c("orange", "blue"), col = c("orange", "blue"),
          border = F,
-         cex = 1.5)
+         cex = 1)
   dev.off()
 }
 
