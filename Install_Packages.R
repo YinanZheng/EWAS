@@ -1,4 +1,6 @@
 
+suppressWarnings(rm(installPackages))
+
 installPackages <- function(packages, update = FALSE)
 {
   installedPackages <- installed.packages()[,"Package"]
