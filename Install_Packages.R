@@ -19,6 +19,7 @@ installPackages <- function(packages, update = FALSE)
 }
 
 list.of.packages <- c("ggplot2", "gridBase", "qualityTools", "XLConnectJars", "XLConnect", "Hmisc", "MASS", "sandwich", "lmtest",
-                      "qvalue", "IlluminaHumanMethylationEPICanno.ilm10b2.hg19")
+                      "qvalue", "IlluminaHumanMethylationEPICanno.ilm10b2.hg19",
+                      "gplots","scales")
 
 installPackages(list.of.packages)
