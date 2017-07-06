@@ -6,11 +6,13 @@ installPackages <- function(packages, update = FALSE)
   
   if(update)
   {
+    message("Reinstalling all required packages.")
     biocLite(packages, suppressUpdates = TRUE)
   } else {
     new.packages <- packages[!(packages %in% installedPackages)]
     if(length(new.packages)) 
     {
+      message(paste0(new.packages, collapse = ", "), " are missing...")
       biocLite(new.packages, suppressUpdates = TRUE)
     } else {
       message("All required packages have been installed.")
@@ -18,8 +20,4 @@ installPackages <- function(packages, update = FALSE)
   }
 }
 
-list.of.packages <- c("ggplot2", "gridBase", "qualityTools", "XLConnectJars", "XLConnect", "Hmisc", "MASS", "sandwich", "lmtest",
-                      "qvalue", "IlluminaHumanMethylationEPICanno.ilm10b2.hg19",
-                      "gplots","scales")
-
-installPackages(list.of.packages)
+## End
