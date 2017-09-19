@@ -20,7 +20,7 @@ addlogtransform <- function(pheno, var.list, base = exp(1)){
 # Load custom dataset
 loadMyData <- function(MyDataFileName, sheetName = NULL)
 {
-  suffix <- tolower(lunlist(strsplit(MyDataFileName,"\\."))[2])
+  suffix <- tolower(unlist(strsplit(MyDataFileName,"\\."))[2])
   
   if(suffix == "csv")
     stop(".csv format is not allowed!")
