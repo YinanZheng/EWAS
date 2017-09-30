@@ -38,6 +38,12 @@ loadMyData <- function(MyDataFileName, sheetName = NULL)
     data <- readRDS(file.path(data_folder, MyDataFileName))
   }
   
+  if(suffix == ".sas7bdat")
+  {
+    message(".sas7bdat file detected.")
+    data <- read.sas7bdat(file.path(data_folder, MyDataFileName))
+  }
+  
   if("ID" %in% colnames(data))
     data$ID <- as.character(data$ID)
   if("ShortID" %in% colnames(data))
