@@ -140,7 +140,8 @@ heatmap_function <- function(m_sub, NAMES_LIST, HM_CONFIG){
 
   CpG_top <- rownames(modresults)[1:NtopCpG]
   m_sub <- m_sub[CpG_top, ]
-  beta <- 2^m_sub/(2^m_sub + 1)
+  # beta <- 2^m_sub/(2^m_sub + 1)
+  beta <- m_sub
   data <- df_var[,NAMES_LIST$VAR]
   ##
   col.factor <- factor(data, levels=c("High", "Low"))
