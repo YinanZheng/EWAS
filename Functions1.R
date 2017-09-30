@@ -38,7 +38,7 @@ loadMyData <- function(MyDataFileName, sheetName = NULL)
     data <- readRDS(file.path(data_folder, MyDataFileName))
   }
   
-  if(suffix == ".sas7bdat")
+  if(suffix == "sas7bdat")
   {
     message(".sas7bdat file detected.")
     data <- read.sas7bdat(file.path(data_folder, MyDataFileName))
