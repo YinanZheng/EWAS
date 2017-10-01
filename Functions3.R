@@ -142,6 +142,9 @@ heatmap_function <- function(m_sub, NAMES_LIST, HM_CONFIG){
   m_sub <- m_sub[CpG_top, ]
   # beta <- 2^m_sub/(2^m_sub + 1)
   beta <- m_sub
+  
+  df_var <- subset(df_var, ID %in% colnames(beta))
+  
   data <- df_var[,NAMES_LIST$VAR]
   ##
   col.factor <- factor(data, levels=c("High", "Low"))
