@@ -165,7 +165,7 @@ heatmap_function <- function(m_sub, modresultsCSV, NAMES_LIST, HM_CONFIG, df_var
                     NAMES_LIST$VAR, "_", NAMES_LIST$modelname, "_", NAMES_LIST$datatype, "_", NAMES_LIST$cells, "_", NAMES_LIST$nPC, "PC_", NAMES_LIST$tag, 
                     "_CpGtop", NAMES_LIST$NtopCpG,"_", HM_CONFIG$dist_method, "_", HM_CONFIG$clust_method,".png"), 
       width = HM_CONFIG$hmWidth, height = HM_CONFIG$hmHeight, res=300, unit="in")
-  heatmap.2(as.matrix(data.diff.top), 
+  heatmap.2(as.matrix(beta), 
             main = paste0(NAMES_LIST$VAR),
             Rowv = as.dendrogram(row.clus),
             Colv = as.dendrogram(col.clus),
@@ -179,8 +179,8 @@ heatmap_function <- function(m_sub, modresultsCSV, NAMES_LIST, HM_CONFIG, df_var
             density.info = "none", 
             xlab = "", ylab = "", cex.lab=2,
             ColSideColors = as.character(ColSideColors),
-            labRow=rownames(data.diff.top),
-            labCol=colnames(data.diff.top),
+            labRow=rownames(beta),
+            labCol=colnames(beta),
             margins = c(10, 8),
             lhei = c(2, 10)
   )
