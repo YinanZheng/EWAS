@@ -125,35 +125,19 @@ ewas_diagPlot <- function(modresults, NAMES_LIST, width = 7, height = 7){
   dev.off()
 }
 
-heatmap_function <- function(m_sub, NAMES_LIST, HM_CONFIG, df_var){
-  # read in sig results
-  
-  modresults <- read.csv(paste0(result_folder, paste0(NAMES_LIST$cohortname, "_", NAMES_LIST$Year, "_", NAMES_LIST$VAR,"_",
-                                                      NAMES_LIST$modelname,"_",NAMES_LIST$datatype,"_",NAMES_LIST$cells,"_", 
-                                                      NAMES_LIST$nPC,"PC_",NAMES_LIST$tag,"_", NAMES_LIST$Date,".csv")), 
-                         stringsAsFactors = F, row.names=1)
-  # dim(modresults)
-  # find max sample size
-  # max_sample <- max(modresults$samplesize)
-  # modresults <- modresults[modresults$samplesize==max_sample, ]
-  # dim(modresults)
-
+heatmap_function <- function(m_sub, modresultsCSV, NAMES_LIST, HM_CONFIG, df_var){
   CpG_top <- rownames(modresults)[1:NtopCpG]
-  m_sub <- m_sub[CpG_top, ]
-  # beta <- 2^m_sub/(2^m_sub + 1)
-  beta <- m_sub
-  
+  beta <- m_sub[CpG_top, ]
   df_var <- subset(df_var, ID %in% colnames(beta))
-  
-  data <- df_var[,NAMES_LIST$VAR]
-  ##
-  col.factor <- factor(data, levels=c("High", "Low"))
+  dat <- df_var[,NAMES_LIST$VAR]
+  col.factor <- factor(dat, levels=c("High", "Low"))
   
   na.ind <- which(is.na(col.factor))
   if(length(na.ind)>0){
     col.factor <- col.factor[-na.ind]
     beta <- beta[, -na.ind]
   }
+  
   data.diff.top <- beta
   data.dist <- dist(as.matrix(data.diff.top), method = HM_CONFIG$dist_method)
   row.clus <- hclust(data.dist, method = HM_CONFIG$clust_method)
