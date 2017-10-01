@@ -73,10 +73,8 @@ statsummary <- function(bigdata, type){
 # methcol = setNames(seq_len(ncol(tdatRUN)), dimnames(tdatRUN)[[2]])[1]
 
 ## RLM
-f.RLM.Adjusted.Robust.par <- function(methcol, VAR, COV, model_statement, datatype, tdatRUN) { 
-  
+f.RLM.par <- function(methcol, VAR, COV, model_statement, datatype, tdatRUN) { 
   bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV)))
-
   mod <- try(rlm(model_statement, bigdata, maxit=200))
   # pull out a data.frame with results
   if("try-error" %in% class(mod)){
@@ -92,9 +90,29 @@ f.RLM.Adjusted.Robust.par <- function(methcol, VAR, COV, model_statement, dataty
 }
 
 ## LM
-# TODO
+f.LM.par <- function(methcol, VAR, COV, model_statement, datatype, tdatRUN) { 
+  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV)))
+  mod <- try(lm(model_statement, bigdata))
+  if("try-error" %in% class(mod)){
+    b <- rep(NA, 21)
+  } else {
+    cf <- summary(mod)$coefficients
+    b <- c(cf[2,], statsummary(bigdata, datatype))
+  }
+  invisible(b)
+}
 
 ## LOGISTIC
-# TODO
+f.LOGISTIC.par <- function(methcol, VAR, COV, model_statement, datatype, tdatRUN) { 
+  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV)))
+  mod <- try(glm(model_statement, bigdata, family = binomial))
+  if("try-error" %in% class(mod)){
+    b <- rep(NA, 21)
+  } else {
+    cf <- summary(mod)$coefficients
+    b <- c(cf[2,], statsummary(bigdata, datatype))
+  }
+  invisible(b)
+}
 
 message("Function2.R loaded!")
