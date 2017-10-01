@@ -125,7 +125,7 @@ ewas_diagPlot <- function(modresults, NAMES_LIST, width = 7, height = 7){
   dev.off()
 }
 
-heatmap_function <- function(m_sub, NAMES_LIST, HM_CONFIG){
+heatmap_function <- function(m_sub, NAMES_LIST, HM_CONFIG, df_var){
   # read in sig results
   
   modresults <- read.csv(paste0(result_folder, paste0(NAMES_LIST$cohortname, "_", NAMES_LIST$Year, "_", NAMES_LIST$VAR,"_",
