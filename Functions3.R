@@ -126,7 +126,7 @@ ewas_diagPlot <- function(modresults, NAMES_LIST, width = 7, height = 7){
 }
 
 heatmap_function <- function(m_sub, modresultsCSV, NAMES_LIST, HM_CONFIG, df_var){
-  CpG_top <- rownames(modresults)[1:NtopCpG]
+  CpG_top <- rownames(modresultsCSV)[1:NtopCpG]
   beta <- m_sub[CpG_top, ]
   df_var <- df_var[match(colnames(beta), df_var$ID),]
   stopifnot(identical(colnames(beta), df_var$ID))
