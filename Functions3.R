@@ -128,7 +128,8 @@ ewas_diagPlot <- function(modresults, NAMES_LIST, width = 7, height = 7){
 heatmap_function <- function(m_sub, modresultsCSV, NAMES_LIST, HM_CONFIG, df_var){
   CpG_top <- rownames(modresults)[1:NtopCpG]
   beta <- m_sub[CpG_top, ]
-  df_var <- subset(df_var, ID %in% colnames(beta))
+  df_var <- df_var[match(colnames(beta), df_var$ID),]
+  stopifnot(identical(colnames(beta), df_var$ID))
   dat <- df_var[,NAMES_LIST$VAR]
   col.factor <- factor(dat, levels=c("High", "Low"))
   
@@ -138,13 +139,24 @@ heatmap_function <- function(m_sub, modresultsCSV, NAMES_LIST, HM_CONFIG, df_var
     beta <- beta[, -na.ind]
   }
   
-  data.diff.top <- beta
-  data.dist <- dist(as.matrix(data.diff.top), method = HM_CONFIG$dist_method)
+  message("Distant method: ", HM_CONFIG$dist_method)
+  if(HM_CONFIG$dist_method == "pearson")  
+  {
+    data.dist <- hyperSpec::pearson.dist(beta)
+    data.dist.g <- hyperSpec::pearson.dist(t(beta))
+  } else {
+    data.dist <- dist(beta, method = HM_CONFIG$dist_method)
+    data.dist.g <- dist(t(beta), method = HM_CONFIG$dist_method)
+  }
+
+  message("Cluster method: ", HM_CONFIG$clust_method)
+  ## Row cluster
   row.clus <- hclust(data.dist, method = HM_CONFIG$clust_method)
-  data.dist.g <- dist(t(beta), method = HM_CONFIG$dist_method)
-  col.clus <- hclust(data.dist.g,  method = HM_CONFIG$clust_method)
-  ColSideColors= factor(c("orange", "blue"))[col.factor]
   
+  ## Column cluster
+  col.clus <- hclust(data.dist.g,  method = HM_CONFIG$clust_method)
+  
+  ColSideColors= factor(c("orange", "blue"))[col.factor]
   colors = c(seq(-4,-0.535353535,length=100),seq(-0.5,0.5,length=100),seq(0.535353535,4,length=100))
   my_palette <- colorRampPalette(c("red", "black", "green"))(n = 299)
   
