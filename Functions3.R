@@ -106,7 +106,7 @@ ewas_diagPlot <- function(modresults, NAMES_LIST, width = 7, height = 7){
   
   qval = qvalue(pval)
   
-  if(sum(qval$qvalues<=0.05) == 0) {cat("None of the results has FDR < 0.05\n"); qThresh = 10} else qThresh = max(pval[qval$qvalues<=0.05])
+  if(sum(qval$qvalues<=0.05) == 0) {message("None of the results has FDR < 0.05"); qThresh = 10} else qThresh = max(pval[qval$qvalues<=0.05])
   
   plot(coef,log.pvalues, col=alpha(colors,0.60),
        xlim=xrg, ylim=yrg, pch=16,main="Volcano Plot",
