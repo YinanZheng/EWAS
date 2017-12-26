@@ -131,7 +131,6 @@ heatmap_function <- function(m_sub, modresultsCSV, NAMES_LIST, HM_CONFIG, df_var
   df_var <- df_var[match(colnames(beta), df_var$ID),]
   stopifnot(identical(colnames(beta), df_var$ID))
   dat <- df_var[,NAMES_LIST$VAR]
-  print(table(dat))
   col.factor <- factor(dat, levels=c("High", "Low"))
   
   na.ind <- which(is.na(col.factor))
