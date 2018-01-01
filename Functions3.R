@@ -56,9 +56,11 @@ ewas_diagPlot <- function(modresults, NAMES_LIST, width = 7, height = 7){
   ##############################################
   ###      Histograms of sample size
   ##############################################
+  xlimUp <- max(modresults$Sample_Size)
   hist(modresults$Sample_Size,
        main="Sample Size Histogram",
-       xlab="Sample Size", col="grey")
+       xlab="Sample Size", col="grey", 
+       xlim=c(0, xlimUp + round(xlimUp*1.2)))
   
   # max_sample <- max(modresults$Sample_Size)
   # modresults <- modresults[modresults$Sample_Size==max_sample, ]
