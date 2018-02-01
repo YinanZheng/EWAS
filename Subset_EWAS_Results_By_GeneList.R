@@ -45,4 +45,4 @@ GenesubEWAS <- function(EWAS_Path, Genelist)
   # return(list(oldgenelist = Genelist, newgenelist = result, EWAS = EWAS.sub ))
 }
 
-message("EWAS results subset function loaded!")
+message("EWAS results subset functions loaded!")
