@@ -31,6 +31,23 @@ publishFormat<-function(res, rounddigit = 3){
   return(res)
 }
 
+splitAutosomal <- function(res, annot)
+{
+  cpg_auto <- as.character(annot$Name[!annot$chr %in% c("chrX", "chrY")])
+  cpg_X <- as.character(annot$Name[annot$chr %in% c("chrX")])
+  cpg_Y <- as.character(annot$Name[annot$chr %in% c("chrY")])
+  
+  length(cpg_auto)
+  length(cpg_X)
+  length(cpg_Y)
+  
+  results_auto <- res[which(rownames(res) %in% cpg_auto),]
+  results_X <- res[which(rownames(res) %in% cpg_X),]
+  results_Y <- res[which(rownames(res) %in% cpg_Y),]
+  
+  return(list(auto = results_auto, X = results_X, Y = results_Y))
+}
+
 sigResults <- function(results, annotcord, NAMES_LIST, psigcut = psigcut, rounddigit = rounddigit){
   results <- na.omit(results)
   results$p.FDR<-p.adjust(results$Pvalue,"fdr")
