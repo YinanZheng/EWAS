@@ -48,10 +48,10 @@ splitAutosomal <- function(res, annot)
   return(list(auto = results_auto, X = results_X, Y = results_Y))
 }
 
-sigResults <- function(results, annotcord, NAMES_LIST, psigcut = psigcut, rounddigit = rounddigit){
+sigResults <- function(results, annotcord, NAMES_LIST, psigcut = psigcut, rounddigit = rounddigit, qval = TRUE){
   results <- na.omit(results)
   results$p.FDR<-p.adjust(results$Pvalue,"fdr")
-  results$qvalue<-qvalue(results$Pvalue)$qvalues
+  if(qval) results$qvalue<-qvalue(results$Pvalue)$qvalues else results$qvalue <- NA 
   results<-results[results$Pvalue<psigcut,]
   results<-results[order(results$Pvalue),]
   
