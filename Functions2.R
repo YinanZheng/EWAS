@@ -37,13 +37,26 @@ splitAutosomal <- function(res, annot)
   cpg_X <- as.character(annot$Name[annot$chr %in% c("chrX")])
   cpg_Y <- as.character(annot$Name[annot$chr %in% c("chrY")])
   
-  length(cpg_auto)
-  length(cpg_X)
-  length(cpg_Y)
+  if(length(cpg_auto) == 0) {
+    print("No autosomal CpG found!")
+    results_auto <- NA
+  } else {
+    results_auto <- res[which(rownames(res) %in% cpg_auto),]
+  }
   
-  results_auto <- res[which(rownames(res) %in% cpg_auto),]
-  results_X <- res[which(rownames(res) %in% cpg_X),]
-  results_Y <- res[which(rownames(res) %in% cpg_Y),]
+  if(length(cpg_X) == 0) {
+    print("No ChrX CpG found!")
+    results_X <- NA
+  } else {
+    results_X <- res[which(rownames(res) %in% cpg_X),]
+  }
+  
+  if(length(cpg_Y) == 0) {
+    print("No ChrY CpG found!")
+    results_Y <- NA
+  } else {
+    results_Y <- res[which(rownames(res) %in% cpg_Y),]
+  }
   
   return(list(auto = results_auto, X = results_X, Y = results_Y))
 }
