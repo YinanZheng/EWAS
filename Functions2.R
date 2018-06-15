@@ -62,7 +62,7 @@ splitAutosomal <- function(res, annot)
 }
 
 sigResults <- function(results, annotcord, NAMES_LIST, psigcut = psigcut, rounddigit = rounddigit, qval = TRUE){
-  if(is.na(results)) return("No result input found!")
+  if(is.null(nrow(results))) return("No result input found!")
   results <- na.omit(results)
   results$p.FDR<-p.adjust(results$Pvalue,"fdr")
   if(qval) results$qvalue<-qvalue(results$Pvalue)$qvalues else results$qvalue <- NA 
