@@ -12,9 +12,37 @@ export_results <- function(modresults, NAMES_LIST, result_folder, rounddigit = r
   # collapse list of data.frames back to a data.table
   # rename
   modresults <- data.frame(modresults)
-  colnames(modresults)[1:4] = c("Estimates","StdErr", "Stat","Pvalue")
+  if(NAMES_LIST$modelname == "lmCat") 
+  {
+    colnames(modresults) = c("Estimates","StdErr", "Stat","Pvalue", 
+                             "TypeII_SumSq", "TypeII_DF", "TypeII_F", "TypeII_Pvalue",
+                             "LSMEAN", "LSMEAN_SE","Sample_Size",
+                             "beta_Min","beta_1stQuartile","beta_Median","beta_Mean","beta_3rdQuartile","beta_Max","beta_IQR","beta_SD",
+                             "M_Min","M_1stQuartile","M_Median","M_Mean","M_3rdQuartile","M_Max","M_IQR","M_SD")
+    rowNames <- rownames(modresults)
+    rowNames <- gsub(".VAR", ".", rowNames)
+    rowNames_split <- strsplit(rowNames, "\\.")
+    cpgNames <- sapply(rowNames_split, function(x) x[1])
+    groupNames <- sapply(rowNames_split, function(x) x[2])
+    modresults <- data.frame(CpG = cpgNames, Group = groupNames, modresults)
+    rownames(modresults) <- NULL
+    badTest <- which(rowSums(is.na(modresults)) == 27)
+  } else {
+    colnames(modresults)[1:4] = c("Estimates","StdErr", "Stat","Pvalue")
+    modresults <- data.frame(CpG = rownames(modresults), modresults)
+    badTest <- which(rowSums(is.na(modresults)) == 21)
+  }
+  
+  if(length(badTest) > 0) 
+  {
+    message(paste0("The following CpGs were failed in the test and thus removed: ", paste0(unique(modresults$CpG[badTest]), collapse = ", ")))
+    modresults <- modresults[-badTest, ]
+  } else {
+    message("All tests were successful without error!")
+  }
   modresults$Sample_Size = as.integer(modresults$Sample_Size)
   modresults <- publishFormat(modresults, rounddigit = rounddigit)
+  
   saveRDS(modresults, file = paste0(result_folder, 
                                     paste0(NAMES_LIST$cohortname, "_", NAMES_LIST$Year, "_", NAMES_LIST$VAR,"_",NAMES_LIST$modelname,"_",
                                            NAMES_LIST$datatype,"_",NAMES_LIST$cells,"_", NAMES_LIST$nPC,"PC_", NAMES_LIST$tag,"_",Sys.Date(),".RDS"))) 
@@ -38,41 +66,64 @@ splitAutosomal <- function(res, annot)
   cpg_Y <- as.character(annot$Name[annot$chr %in% c("chrY")])
   
   if(length(cpg_auto) == 0) {
-    print("No autosomal CpG found!")
+    message("No autosomal CpG found!")
     results_auto <- NA
   } else {
-    results_auto <- res[which(rownames(res) %in% cpg_auto),]
+    results_auto <- res[which(res$CpG %in% cpg_auto),]
+    message(paste0(nrow(results_auto), " autosomal CpGs."))
   }
   
   if(length(cpg_X) == 0) {
-    print("No ChrX CpG found!")
+    message("No ChrX CpG found!")
     results_X <- NA
   } else {
-    results_X <- res[which(rownames(res) %in% cpg_X),]
+    results_X <- res[which(res$CpG %in% cpg_X),]
+    message(paste0(nrow(results_X), " X-chromosome CpGs."))
   }
   
   if(length(cpg_Y) == 0) {
-    print("No ChrY CpG found!")
+    message("No ChrY CpG found!")
     results_Y <- NA
   } else {
-    results_Y <- res[which(rownames(res) %in% cpg_Y),]
+    results_Y <- res[which(res$CpG %in% cpg_Y),]
+    message(paste0(nrow(results_Y), " Y-chromosome CpGs."))
   }
   
   return(list(auto = results_auto, X = results_X, Y = results_Y))
 }
 
 sigResults <- function(results, annotcord, NAMES_LIST, psigcut = psigcut, rounddigit = rounddigit, qval = TRUE){
-  if(is.null(nrow(results))) return("No result input found!")
-  results <- na.omit(results)
-  results$p.FDR<-p.adjust(results$Pvalue,"fdr")
-  if(qval) results$qvalue<-qvalue(results$Pvalue)$qvalues else results$qvalue <- NA 
-  results<-results[results$Pvalue<psigcut,]
-  results<-results[order(results$Pvalue),]
+  if(is.null(nrow(results)) | nrow(results) == 0) 
+  {
+    message("No result input found!")
+    return(NULL)
+  }
+    
+  if(NAMES_LIST$modelname == "lmCat")
+  {
+    results$p.FDR<-p.adjust(results$TypeII_Pvalue,"fdr")
+    if(qval) results$qvalue<-qvalue(results$TypeII_Pvalue)$qvalues else results$qvalue <- NA 
+    sigCpG <- na.omit(results[, c("CpG", "TypeII_Pvalue")])
+    sigCpG <- subset(sigCpG, TypeII_Pvalue<psigcut)
+    sigCpG <- as.character(sigCpG$CpG[order(sigCpG$TypeII_Pvalue)])
+    mind <- match(results$CpG, sigCpG)
+    results <- results[intersect(order(mind), which(!is.na(mind))), ]
+    # Add annotation
+    results = cbind(results,annotcord[match(results$CpG,annotcord$Name),])
+  } else {
+    results$p.FDR<-p.adjust(results$Pvalue,"fdr")
+    if(qval) results$qvalue<-qvalue(results$Pvalue)$qvalues else results$qvalue <- NA 
+    results<-results[results$Pvalue<psigcut,]
+    results<-results[order(results$Pvalue),]
+    # Add annotation
+    results = cbind(results,annotcord[match(results$CpG,annotcord$Name),])
+  }
   
-  # Add annotation
-  results = cbind(results,annotcord[match(rownames(results),annotcord$Name),])
-  write.csv(results, paste0(result_folder, paste0(NAMES_LIST$cohortname, "_", NAMES_LIST$Year, "_", NAMES_LIST$VAR,"_", NAMES_LIST$modelname,"_",
-                                                  NAMES_LIST$datatype,"_", NAMES_LIST$cells,"_", NAMES_LIST$nPC,"PC_", NAMES_LIST$tag,"_",Sys.Date(),".csv")))
+  sigFileName <- paste0(NAMES_LIST$cohortname, "_", NAMES_LIST$Year, "_", NAMES_LIST$VAR,"_", NAMES_LIST$modelname,"_",
+                        NAMES_LIST$datatype,"_", NAMES_LIST$cells,"_", NAMES_LIST$nPC,"PC_", NAMES_LIST$tag,"_",Sys.Date(),".csv")
+  
+  message(paste0("Writing file: ", sigFileName))
+  write.csv(results, sigFileName, row.names = FALSE)
   message("Signficant results exported!")
 }
 
@@ -129,6 +180,29 @@ f.LM.par <- function(methcol, VAR, COV, model_statement, datatype, tdatRUN) {
   } else {
     cf <- summary(mod)$coefficients
     b <- c(cf[2,], statsummary(bigdata, datatype))
+  }
+  invisible(b)
+}
+
+## LM_CAT
+f.LM_CAT.par <- function(methcol, VAR, nCat, COV, model_statement, datatype, tdatRUN) { 
+  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV)))
+  mod <- try(lm(model_statement, bigdata))
+  if("try-error" %in% c(class(mod), class(mod_aov))){
+    b <- rep(NA, 27)
+  } else {
+    anova_typeII <- as.matrix(car::Anova(mod))[1,]
+    anova_typeII <- rbind(anova_typeII, matrix(rep(rep(NA, 4), nCat - 1), nrow = nCat-1))
+    lsm <- lsmeans(mod, ~VAR)
+    cf <- summary(mod)$coefficients[seq_len(nCat-1) + 1,]
+    cf <- rbind(NA, cf)
+    cf <- cbind(cf, anova_typeII, as.data.frame(summary(lsm))[,c("lsmean", "SE")])
+    statsummary_res <- NULL
+    for(l in lsm@levels$VAR)
+    {
+      statsummary_res <- rbind(statsummary_res, statsummary(subset(bigdata, VAR == l), datatype))
+    }
+    b <- cbind(cf, statsummary_res)
   }
   invisible(b)
 }
