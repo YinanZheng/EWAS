@@ -25,7 +25,7 @@ loadMyData <- function(MyDataFileName, sheetName = NULL)
   if(suffix == "csv")
   {
     data <- read.csv(file.path(data_folder, MyDataFileName))
-    warning("You are loading csv file. Make sure the ID column is not truncated")
+    warning("You are loading .csv file. Make sure the ID column is not truncated!")
   }
   
   if(suffix %in% c("xlsx", "xls"))
