@@ -152,4 +152,20 @@ dataQualityPlot_out_RM <- function(pheno, var.list,  Tag, groupVar = NULL, stack
   }
 }
 
+unix2dos <- function(file)
+{
+  txt <- readLines(file)
+  con <- file(file, open="wb")
+  writeLines(txt, con, sep="\r\n")
+  close(con)
+}
+
+dos2unix <- function(file)
+{
+  txt <- readLines(file)
+  con <- file(file, open="wb")
+  writeLines(txt, con, sep="\n")
+  close(con)
+}
+
 message("Function1.R loaded!")
