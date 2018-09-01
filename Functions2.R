@@ -191,12 +191,12 @@ f.LM_CAT.par <- function(methcol, VAR, nCat, COV, model_statement, datatype, tda
   if("try-error" %in% class(mod)){
     b <- rep(NA, 27)
   } else {
-    anova_typeII <- as.matrix(car::Anova(mod))[1,]
+    anova_typeII <- as.matrix(Anova(mod))[1,]
     anova_typeII <- rbind(anova_typeII, matrix(rep(rep(NA, 4), nCat - 1), nrow = nCat-1))
-    lsm <- lsmeans(mod, ~VAR)
+    lsm <- emmeans(mod, ~VAR, data = bigdata)
     cf <- summary(mod)$coefficients[seq_len(nCat-1) + 1,]
     cf <- rbind(NA, cf)
-    cf <- cbind(cf, anova_typeII, as.data.frame(summary(lsm))[,c("lsmean", "SE")])
+    cf <- cbind(cf, anova_typeII, as.data.frame(summary(lsm))[,c("emmean", "SE")])
     statsummary_res <- NULL
     for(l in lsm@levels$VAR)
     {
