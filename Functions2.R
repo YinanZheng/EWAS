@@ -15,7 +15,7 @@ export_results <- function(modresults, NAMES_LIST, result_folder, rounddigit = r
   if(NAMES_LIST$modelname == "lmCat") 
   {
     colnames(modresults) = c("Estimates","StdErr", "Stat","Pvalue", 
-                             "TypeII_SumSq", "TypeII_DF", "TypeII_F", "TypeII_Pvalue",
+                             "TypeII_SumSq", "TypeII_F", "TypeII_Pvalue",
                              "LSMEAN", "LSMEAN_SE","Sample_Size",
                              "beta_Min","beta_1stQuartile","beta_Median","beta_Mean","beta_3rdQuartile","beta_Max","beta_IQR","beta_SD",
                              "M_Min","M_1stQuartile","M_Median","M_Mean","M_3rdQuartile","M_Max","M_IQR","M_SD")
@@ -26,7 +26,7 @@ export_results <- function(modresults, NAMES_LIST, result_folder, rounddigit = r
     groupNames <- sapply(rowNames_split, function(x) x[2])
     modresults <- data.frame(CpG = cpgNames, Group = groupNames, modresults)
     rownames(modresults) <- NULL
-    badTest <- which(rowSums(is.na(modresults)) == 27)
+    badTest <- which(rowSums(is.na(modresults)) == 26)
   } else {
     colnames(modresults)[1:4] = c("Estimates","StdErr", "Stat","Pvalue")
     modresults <- data.frame(CpG = rownames(modresults), modresults)
@@ -43,7 +43,7 @@ export_results <- function(modresults, NAMES_LIST, result_folder, rounddigit = r
   modresults$Sample_Size = as.integer(modresults$Sample_Size)
   modresults <- publishFormat(modresults, rounddigit = rounddigit)
   
-  saveRDS(modresults, file = paste0(result_folder, 
+  saveRDS(modresults, file = file.path(result_folder, 
                                     paste0(NAMES_LIST$cohortname, "_", NAMES_LIST$Year, "_", NAMES_LIST$VAR,"_",NAMES_LIST$modelname,"_",
                                            NAMES_LIST$datatype,"_",NAMES_LIST$cells,"_", NAMES_LIST$nPC,"PC_", NAMES_LIST$tag,"_",Sys.Date(),".RDS"))) 
   message("EWAS results exported!")
@@ -123,7 +123,7 @@ sigResults <- function(results, annotcord, NAMES_LIST, psigcut = psigcut, roundd
                         NAMES_LIST$datatype,"_", NAMES_LIST$cells,"_", NAMES_LIST$nPC,"PC_", NAMES_LIST$tag,"_",Sys.Date(),".csv")
   
   message(paste0("Writing file: ", sigFileName))
-  write.csv(results, sigFileName, row.names = FALSE)
+  write.csv(results, file.path(result_folder, sigFileName), row.names = FALSE)
   message("Signficant results exported!")
 }
 
@@ -189,14 +189,14 @@ f.LM_CAT.par <- function(methcol, VAR, nCat, COV, model_statement, datatype, tda
   bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV)))
   mod <- try(lm(model_statement, bigdata))
   if("try-error" %in% class(mod)){
-    b <- rep(NA, 27)
+    b <- rep(NA, 26)
   } else {
     anova_typeII <- as.matrix(Anova(mod))[1,]
     anova_typeII <- rbind(anova_typeII, matrix(rep(rep(NA, 4), nCat - 1), nrow = nCat-1))
     lsm <- emmeans(mod, ~VAR, data = bigdata)
     cf <- summary(mod)$coefficients[seq_len(nCat-1) + 1,]
     cf <- rbind(NA, cf)
-    cf <- cbind(cf, anova_typeII, as.data.frame(summary(lsm))[,c("emmean", "SE")])
+    cf <- cbind(cf, anova_typeII[,-2], as.data.frame(summary(lsm))[,c("emmean", "SE")])
     statsummary_res <- NULL
     for(l in lsm@levels$VAR)
     {
