@@ -70,7 +70,7 @@ splitAutosomal <- function(res, annot)
     results_auto <- NA
   } else {
     results_auto <- res[which(res$CpG %in% cpg_auto),]
-    message(paste0(nrow(results_auto), " autosomal CpGs."))
+    message(paste0(length(unique(results_auto$CpG)), " autosomal CpGs."))
   }
   
   if(length(cpg_X) == 0) {
@@ -78,7 +78,7 @@ splitAutosomal <- function(res, annot)
     results_X <- NA
   } else {
     results_X <- res[which(res$CpG %in% cpg_X),]
-    message(paste0(nrow(results_X), " X-chromosome CpGs."))
+    message(paste0(length(unique(results_X$CpG)), " X-chromosome CpGs."))
   }
   
   if(length(cpg_Y) == 0) {
@@ -86,7 +86,7 @@ splitAutosomal <- function(res, annot)
     results_Y <- NA
   } else {
     results_Y <- res[which(res$CpG %in% cpg_Y),]
-    message(paste0(nrow(results_Y), " Y-chromosome CpGs."))
+    message(paste0(length(unique(results_Y$CpG)), " Y-chromosome CpGs."))
   }
   
   return(list(auto = results_auto, X = results_X, Y = results_Y))
