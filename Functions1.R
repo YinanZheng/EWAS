@@ -5,6 +5,8 @@ suppressWarnings(rm(loadMyData))
 suppressWarnings(rm(outlierRemove))
 suppressWarnings(rm(dataQualityPlot))
 suppressWarnings(rm(dataQualityPlot_out_RM))
+suppressWarnings(rm(unix2dos))
+suppressWarnings(rm(dos2unix))
 
 # function to add log-transformed variables (optional)
 addlogtransform <- function(pheno, var.list, base = exp(1)){
@@ -18,8 +20,7 @@ addlogtransform <- function(pheno, var.list, base = exp(1)){
 }
 
 # Load custom dataset
-loadMyData <- function(MyDataFileName, sheetName = NULL)
-{
+loadMyData <- function(MyDataFileName, sheetName = NULL){
   suffix <- tolower(unlist(strsplit(MyDataFileName,"\\."))[2])
   
   if(suffix == "csv")
@@ -56,8 +57,7 @@ loadMyData <- function(MyDataFileName, sheetName = NULL)
 }
   
 # Remove outliers using 3*IQR
-outlierRemove <- function(df, variable_interest_outlierRemove_outlierRemove)
-{
+outlierRemove <- function(df, variable_interest_outlierRemove_outlierRemove){
   quantile2575 <- apply(df[, variable_interest_outlierRemove], 2, function(x) quantile(x, probs = c(0.25, 0.75), na.rm = T))
   IQR <- quantile2575[2,] - quantile2575[1,]
   extremeUpper <- quantile2575[2,] + 3 * IQR
@@ -152,16 +152,14 @@ dataQualityPlot_out_RM <- function(pheno, var.list,  Tag, groupVar = NULL, stack
   }
 }
 
-unix2dos <- function(file)
-{
+unix2dos <- function(file){
   txt <- readLines(file)
   con <- file(file, open="wb")
   writeLines(txt, con, sep="\r\n")
   close(con)
 }
 
-dos2unix <- function(file)
-{
+dos2unix <- function(file){
   txt <- readLines(file)
   con <- file(file, open="wb")
   writeLines(txt, con, sep="\n")

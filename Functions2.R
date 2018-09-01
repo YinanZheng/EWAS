@@ -2,18 +2,22 @@
 
 suppressWarnings(rm(export_results))
 suppressWarnings(rm(publishFormat))
+suppressWarnings(rm(splitAutosomal))
 suppressWarnings(rm(sigResults))
 suppressWarnings(rm(statsummary))
 
-suppressWarnings(rm(f.RLM.Adjusted.Robust.par))
+suppressWarnings(rm(f.RLM.par))
+suppressWarnings(rm(f.LM.par))
+suppressWarnings(rm(f.LM_CAT.par))
+suppressWarnings(rm(f.LOGISTIC.par))
 
 ## Function to export results
 export_results <- function(modresults, NAMES_LIST, result_folder, rounddigit = rounddigit){
-  # collapse list of data.frames back to a data.table
-  # rename
   modresults <- data.frame(modresults)
   if(NAMES_LIST$modelname == "lmCat") 
   {
+    suppressPackageStartupMessages(library(stringi))
+    
     colnames(modresults) = c("Estimates","StdErr", "Stat","Pvalue", 
                              "TypeII_SumSq", "TypeII_F", "TypeII_Pvalue",
                              "LSMEAN", "LSMEAN_SE","Sample_Size",
@@ -21,9 +25,9 @@ export_results <- function(modresults, NAMES_LIST, result_folder, rounddigit = r
                              "M_Min","M_1stQuartile","M_Median","M_Mean","M_3rdQuartile","M_Max","M_IQR","M_SD")
     rowNames <- rownames(modresults)
     rowNames <- gsub(".VAR", ".", rowNames)
-    rowNames_split <- strsplit(rowNames, "\\.")
-    cpgNames <- sapply(rowNames_split, function(x) x[1])
-    groupNames <- sapply(rowNames_split, function(x) x[2])
+    rowNames_split <- lapply(stri_split_fixed(stri_reverse(rowNames), ".", n = 2), stri_reverse)
+    cpgNames <- sapply(rowNames_split, function(x) x[2])
+    groupNames <- sapply(rowNames_split, function(x) x[1])
     modresults <- data.frame(CpG = cpgNames, Group = groupNames, modresults)
     rownames(modresults) <- NULL
     badTest <- which(rowSums(is.na(modresults)) == 26)
@@ -59,8 +63,7 @@ publishFormat<-function(res, rounddigit = 3){
   return(res)
 }
 
-splitAutosomal <- function(res, annot)
-{
+splitAutosomal <- function(res, annot){
   cpg_auto <- as.character(annot$Name[!annot$chr %in% c("chrX", "chrY")])
   cpg_X <- as.character(annot$Name[annot$chr %in% c("chrX")])
   cpg_Y <- as.character(annot$Name[annot$chr %in% c("chrY")])
