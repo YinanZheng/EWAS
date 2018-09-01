@@ -93,7 +93,7 @@ splitAutosomal <- function(res, annot)
 }
 
 sigResults <- function(results, annotcord, NAMES_LIST, psigcut = psigcut, rounddigit = rounddigit, qval = TRUE){
-  if(is.null(nrow(results)) | nrow(results) == 0) 
+  if(is.null(nrow(results))) 
   {
     message("No result input found!")
     return(NULL)
