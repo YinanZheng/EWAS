@@ -188,7 +188,7 @@ f.LM.par <- function(methcol, VAR, COV, model_statement, datatype, tdatRUN) {
 f.LM_CAT.par <- function(methcol, VAR, nCat, COV, model_statement, datatype, tdatRUN) { 
   bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV)))
   mod <- try(lm(model_statement, bigdata))
-  if("try-error" %in% c(class(mod), class(mod_aov))){
+  if("try-error" %in% class(mod)){
     b <- rep(NA, 27)
   } else {
     anova_typeII <- as.matrix(car::Anova(mod))[1,]
