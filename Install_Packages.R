@@ -14,7 +14,7 @@ installPackages <- function(packages, update = FALSE)
     if(length(new.packages)) 
     {
       message(paste0(new.packages, collapse = ", "), " are missing...")
-      BiocManager::install(new.packages, ask = FALSE)
+      BiocManager::install(new.packages, ask = TRUE)
     } else {
       message("All required packages have been installed.")
     }
