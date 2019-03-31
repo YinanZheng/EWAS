@@ -57,7 +57,7 @@ loadMyData <- function(MyDataFileName, sheetName = NULL){
 }
   
 # Remove outliers using 3*IQR
-outlierRemove <- function(df, variable_interest_outlierRemove_outlierRemove){
+outlierRemove <- function(df, variable_interest_outlierRemove){
   quantile2575 <- apply(df[, variable_interest_outlierRemove], 2, function(x) quantile(x, probs = c(0.25, 0.75), na.rm = T))
   IQR <- quantile2575[2,] - quantile2575[1,]
   extremeUpper <- quantile2575[2,] + 3 * IQR
