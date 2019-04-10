@@ -223,4 +223,29 @@ f.LOGISTIC.par <- function(methcol, VAR, COV, model_statement, datatype, tdatRUN
   invisible(b)
 }
 
+## GEE-linear
+f.GEE_lm.par <- function(methcol, VAR, COV, ID, model_statement, datatype, tdatRUN) { 
+  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV, ID = ID)))
+  mod <- try(geeglm(model_statement, id = ID, data = bigdata, family = gaussian, corstr="ar1"))
+  if("try-error" %in% class(mod)){
+    b <- rep(NA, 21)
+  } else {
+    cf <- summary(mod)$coefficients
+    b <- c(cf[2,], statsummary(bigdata, datatype))
+  }
+  invisible(b)
+}
+
+## GEE-logistic
+f.GEE_logistic.par <- function(methcol, VAR, COV, ID, model_statement, datatype, tdatRUN) { 
+  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV, ID = ID)))
+  mod <- try(geeglm(model_statement, id = ID, data = bigdata, family = binomial, corstr="ar1"))
+  if("try-error" %in% class(mod)){
+    b <- rep(NA, 21)
+  } else {
+    cf <- summary(mod)$coefficients
+    b <- c(cf[2,], statsummary(bigdata, datatype))
+  }
+  invisible(b)
+}
 message("Function2.R loaded!")
