@@ -54,12 +54,20 @@ export_results <- function(modresults, NAMES_LIST, result_folder, rounddigit = r
   return(modresults)
 }
 
+round_pad <- function(x, digits=0)
+{
+ format(round(x, digits), nsmall=digits)
+}
+                         
 publishFormat<-function(res, rounddigit = 3){
-  res$lower<-res[,"Estimates"]-1.96*res[,"StdErr"]
-  res$upper<-res[,"Estimates"]+1.96*res[,"StdErr"]
-  res$beta <- round(res[,"Estimates"], rounddigit)
-  res$CI <- paste0("(",round(res$lower, rounddigit),", ",round(res$upper, rounddigit),")")
-  res$p <- round(res[,"Pvalue"], rounddigit)
+  est = as.numeric(res[,"Estimates"])
+  se = as.numeric(res[,"StdErr"])
+  p = as.numeric(res[,"Pvalue"])
+  res$lower <- est-1.96*se
+  res$upper <- est+1.96*se
+  res$beta <- round_pad(est, rounddigit)
+  res$CI <- paste0("(",round_pad(res$lower, rounddigit),", ",round_pad(res$upper, rounddigit),")")
+  res$p <- round_pad(p, rounddigit+5)
   return(res)
 }
 
