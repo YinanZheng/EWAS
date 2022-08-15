@@ -50,7 +50,7 @@ loadMyData <- function(MyDataFileName, sheetName = NULL){
   if(suffix == "sas7bdat")
   {
     message(".sas7bdat file detected.")
-    data <- read.sas7bdat(file.path(data_folder, MyDataFileName))
+    data <- read_sas(file.path(data_folder, MyDataFileName))
   }
   
   return(data)
