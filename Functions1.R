@@ -29,11 +29,16 @@ loadMyData <- function(MyDataFileName, sheetName = NULL){
     warning("You are loading .csv file. Make sure the ID column is not truncated!")
   }
   
-  if(suffix %in% c("xlsx", "xls"))
+  if(suffix == "xls"))
   {
     message("Excel file detected.")
-    wb <- loadWorkbook(file.path(data_folder, MyDataFileName))
-    data <- readWorksheet(wb, sheetName)
+    data <- read_xls(file.path(data_folder, MyDataFileName))
+  } 
+  
+  if(suffix == "xlsx"))
+  {
+    message("Excel file detected.")
+    data <- read_xlsx(file.path(data_folder, MyDataFileName))
   } 
   
   if(suffix == "rds")
@@ -47,11 +52,6 @@ loadMyData <- function(MyDataFileName, sheetName = NULL){
     message(".sas7bdat file detected.")
     data <- read.sas7bdat(file.path(data_folder, MyDataFileName))
   }
-  
-  if("ID" %in% colnames(data))
-    data$ID <- as.character(data$ID)
-  if("ShortID" %in% colnames(data))
-    data$ShortID <- as.character(data$ShortID)
   
   return(data)
 }
