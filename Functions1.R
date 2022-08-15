@@ -29,13 +29,13 @@ loadMyData <- function(MyDataFileName, sheetName = NULL){
     warning("You are loading .csv file. Make sure the ID column is not truncated!")
   }
   
-  if(suffix == "xls"))
+  if(suffix == "xls")
   {
     message("Excel file detected.")
     data <- read_xls(file.path(data_folder, MyDataFileName))
   } 
   
-  if(suffix == "xlsx"))
+  if(suffix == "xlsx")
   {
     message("Excel file detected.")
     data <- read_xlsx(file.path(data_folder, MyDataFileName))
