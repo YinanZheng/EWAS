@@ -53,6 +53,12 @@ loadMyData <- function(MyDataFileName, sheetName = NULL){
     data <- read_sas(file.path(data_folder, MyDataFileName))
   }
   
+  if("ID" %in% colnames(data))
+    data$ID <- as.character(data$ID)
+  
+  if("SHORT_ID" %in% colnames(data))
+    data$SHORT_ID <- as.character(data$SHORT_ID)
+  
   return(data)
 }
   
