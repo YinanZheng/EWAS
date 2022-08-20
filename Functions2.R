@@ -10,6 +10,8 @@ suppressWarnings(rm(f.RLM.par))
 suppressWarnings(rm(f.LM.par))
 suppressWarnings(rm(f.LM_CAT.par))
 suppressWarnings(rm(f.LOGISTIC.par))
+suppressWarnings(rm(f.GEE_lm.par))
+suppressWarnings(rm(f.GEE_logistic.par))
 
 ## Function to export results
 export_results <- function(modresults, NAMES_LIST, result_folder, rounddigit = rounddigit){
@@ -195,9 +197,29 @@ f.LM.par <- function(methcol, VAR, COV, model_statement, datatype, tdatRUN) {
   invisible(b)
 }
 
+## LM_RES
+f.LM_RES.par <- function(methcol, VAR, COV, model_statement, res_model_statement, datatype, tdatRUN) { 
+  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))), methy = tdatRUN[, methcol], COV)))
+  
+  mod_res <- try(lm(res_model_statement, bigdata))
+  if("try-error" %in% class(mod)){
+    b <- rep(NA, 21)
+  } else {
+    bigdata$methy <- residuals(mod)
+    mod <- try(lm(model_statement, bigdata))
+    if("try-error" %in% class(mod)){
+      b <- rep(NA, 21)
+    } else {
+      cf <- summary(mod)$coefficients
+      b <- c(cf[2,], statsummary(bigdata, datatype))
+    }
+  }
+  invisible(b)
+}
+                         
 ## LM_CAT
 f.LM_CAT.par <- function(methcol, VAR, nCat, COV, model_statement, datatype, tdatRUN) { 
-  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV)))
+  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))), methy = tdatRUN[, methcol], COV)))
   mod <- try(lm(model_statement, bigdata))
   if("try-error" %in% class(mod)){
     b <- rep(NA, 26)
@@ -220,7 +242,7 @@ f.LM_CAT.par <- function(methcol, VAR, nCat, COV, model_statement, datatype, tda
 
 ## LOGISTIC
 f.LOGISTIC.par <- function(methcol, VAR, COV, model_statement, datatype, tdatRUN) { 
-  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV)))
+  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))), methy = tdatRUN[, methcol], COV)))
   mod <- try(glm(model_statement, bigdata, family = binomial))
   if("try-error" %in% class(mod)){
     b <- rep(NA, 21)
@@ -232,8 +254,8 @@ f.LOGISTIC.par <- function(methcol, VAR, COV, model_statement, datatype, tdatRUN
 }
 
 ## GEE-linear
-f.GEE_lm.par <- function(methcol, VAR, COV, ID, model_statement, datatype, tdatRUN) { 
-  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV, ID = ID)))
+f.GEE_LM.par <- function(methcol, VAR, COV, ID, model_statement, datatype, tdatRUN) { 
+  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))), methy = tdatRUN[, methcol], COV, ID = ID)))
   mod <- try(geeglm(model_statement, id = ID, data = bigdata, family = gaussian, corstr="ar1"))
   if("try-error" %in% class(mod)){
     b <- rep(NA, 21)
@@ -245,8 +267,8 @@ f.GEE_lm.par <- function(methcol, VAR, COV, ID, model_statement, datatype, tdatR
 }
 
 ## GEE-logistic
-f.GEE_logistic.par <- function(methcol, VAR, COV, ID, model_statement, datatype, tdatRUN) { 
-  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))),methy = tdatRUN[, methcol], COV, ID = ID)))
+f.GEE_LOGISTIC.par <- function(methcol, VAR, COV, ID, model_statement, datatype, tdatRUN) { 
+  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))), methy = tdatRUN[, methcol], COV, ID = ID)))
   mod <- try(geeglm(model_statement, id = ID, data = bigdata, family = binomial, corstr="ar1"))
   if("try-error" %in% class(mod)){
     b <- rep(NA, 21)
