@@ -200,12 +200,11 @@ f.LM.par <- function(methcol, VAR, COV, model_statement, datatype, tdatRUN) {
 ## LM_RES
 f.LM_RES.par <- function(methcol, VAR, COV, model_statement, res_model_statement, datatype, tdatRUN) { 
   bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))), methy = tdatRUN[, methcol], COV)))
-  
   mod_res <- try(lm(res_model_statement, bigdata))
-  if("try-error" %in% class(mod)){
+  if("try-error" %in% class(mod_res)){
     b <- rep(NA, 21)
   } else {
-    bigdata$methy <- residuals(mod)
+    bigdata$methy <- residuals(mod_res)
     mod <- try(lm(model_statement, bigdata))
     if("try-error" %in% class(mod)){
       b <- rep(NA, 21)
