@@ -13,6 +13,15 @@ suppressWarnings(rm(f.LOGISTIC.par))
 suppressWarnings(rm(f.GEE_lm.par))
 suppressWarnings(rm(f.GEE_logistic.par))
 
+## Function to perform rank-based inverse normal transform (INT) - Blom transform
+rbint <- function(u) 
+{
+    n <- length(u)
+    r <- rank(u, ties.method = "average)
+    out <- stats::qnorm((r - 0.375)/(n - 2 * k + 1))
+    return(out)
+}
+
 ## Function to export results
 export_results <- function(modresults, NAMES_LIST, result_folder, rounddigit = rounddigit){
   modresults <- data.frame(modresults)
