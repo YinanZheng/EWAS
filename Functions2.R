@@ -226,6 +226,25 @@ f.LM_RES.par <- function(methcol, VAR, COV, model_statement, res_model_statement
   }
   invisible(b)
 }
+    
+## LM_RES_INT
+f.LM_RES_INT.par <- function(methcol, VAR, COV, model_statement, res_model_statement, datatype, tdatRUN) { 
+  bigdata <- data.frame(na.omit(cbind(VAR = eval(parse(text = paste0("df$", VAR))), methy = tdatRUN[, methcol], COV)))
+  mod_res <- try(lm(res_model_statement, bigdata))
+  if("try-error" %in% class(mod_res)){
+    b <- rep(NA, 21)
+  } else {
+    bigdata$methy <- rbint(residuals(mod_res))
+    mod <- try(lm(model_statement, bigdata))
+    if("try-error" %in% class(mod)){
+      b <- rep(NA, 21)
+    } else {
+      cf <- summary(mod)$coefficients
+      b <- c(cf[2,], nrow(bigdata), rep(NA, 16)) # statsummary is not applicable for residual
+    }
+  }
+  invisible(b)
+}
                          
 ## LM_CAT
 f.LM_CAT.par <- function(methcol, VAR, nCat, COV, model_statement, datatype, tdatRUN) { 
