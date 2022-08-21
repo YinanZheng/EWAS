@@ -19,7 +19,7 @@ suppressWarnings(rm(f.GEE_logistic.par))
 rbint <- function(u) 
 {
     n <- length(u)
-    r <- rank(u, ties.method = "average)
+    r <- rank(u, ties.method = "average")
     out <- stats::qnorm((r - 0.375)/(n - 2 * k + 1))
     return(out)
 }
