@@ -9,6 +9,7 @@ suppressWarnings(rm(statsummary))
 
 suppressWarnings(rm(f.RLM.par))
 suppressWarnings(rm(f.LM.par))
+suppressWarnings(rm(f.LM_RES.par))
 suppressWarnings(rm(f.LM_CAT.par))
 suppressWarnings(rm(f.LOGISTIC.par))
 suppressWarnings(rm(f.GEE_lm.par))
