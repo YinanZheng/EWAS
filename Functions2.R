@@ -1,5 +1,6 @@
 ### Functions for EWAS Pipeline-2
 
+suppressWarnings(rm(rbint))
 suppressWarnings(rm(export_results))
 suppressWarnings(rm(publishFormat))
 suppressWarnings(rm(splitAutosomal))
@@ -43,7 +44,9 @@ export_results <- function(modresults, NAMES_LIST, result_folder, rounddigit = r
     rownames(modresults) <- NULL
     badTest <- which(rowSums(is.na(modresults)) == 26)
   } else {
-    colnames(modresults)[1:4] = c("Estimates","StdErr", "Stat","Pvalue")
+    colnames(modresults) = c("Estimates","StdErr", "Stat","Pvalue",
+                             "Sample_Size","beta_Min","beta_1stQuartile", "beta_Median","beta_Mean","beta_3rdQuartile","beta_Max","beta_IQR","beta_SD",
+                             "M_Min","M_1stQuartile", "M_Median","M_Mean","M_3rdQuartile","M_Max","M_IQR","M_SD")
     modresults <- data.frame(CpG = rownames(modresults), modresults)
     badTest <- which(rowSums(is.na(modresults)) == 21)
   }
@@ -163,11 +166,9 @@ statsummary <- function(bigdata, type){
     betaVal <- bigdata$methy
     Mval <- log2(betaVal/(1-betaVal))
   }
-  
+
   res = c(samplesize, min(betaVal),quantile(betaVal,0.25),median(betaVal),mean(betaVal),quantile(betaVal,0.75),max(betaVal),IQR(betaVal),sd(betaVal),
           min(Mval),quantile(Mval,0.25),median(Mval),mean(Mval),quantile(Mval,0.75),max(Mval),IQR(Mval),sd(Mval))
-  names(res) = c("Sample_Size","beta_Min","beta_1stQuartile", "beta_Median","beta_Mean","beta_3rdQuartile","beta_Max","beta_IQR","beta_SD",
-                 "M_Min","M_1stQuartile", "M_Median","M_Mean","M_3rdQuartile","M_Max","M_IQR","M_SD")
   return(res)
 }
 
@@ -219,7 +220,7 @@ f.LM_RES.par <- function(methcol, VAR, COV, model_statement, res_model_statement
       b <- rep(NA, 21)
     } else {
       cf <- summary(mod)$coefficients
-      b <- c(cf[2,], statsummary(bigdata, datatype))
+      b <- c(cf[2,], rep(NA, 17)) # statsummary is not applicable for residual
     }
   }
   invisible(b)
