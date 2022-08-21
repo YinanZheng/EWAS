@@ -221,7 +221,7 @@ f.LM_RES.par <- function(methcol, VAR, COV, model_statement, res_model_statement
       b <- rep(NA, 21)
     } else {
       cf <- summary(mod)$coefficients
-      b <- c(cf[2,], rep(NA, 17)) # statsummary is not applicable for residual
+      b <- c(cf[2,], nrow(bigdata), rep(NA, 16)) # statsummary is not applicable for residual
     }
   }
   invisible(b)
